@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../../config/prisma';
 import AppError from '../../errors/AppError';
 
+import { EnrollmentStatus } from '@prisma/client';
+
 const updateLessonProgress = async (
   userId: string,
   lessonId: string,
@@ -35,7 +37,7 @@ const updateLessonProgress = async (
   }
 
   // 3. Upsert progress
-  const progress = await prisma.lessonProgress.upsert({
+  await prisma.lessonProgress.upsert({
     where: {
       enrollmentId_lessonId: {
         enrollmentId: enrollment.id,
@@ -54,7 +56,34 @@ const updateLessonProgress = async (
     },
   });
 
-  return progress;
+  // 4. Calculate progress percentage
+  const totalLessons = await prisma.lesson.count({
+    where: { courseId: lesson.courseId },
+  });
+
+  const completedLessons = await prisma.lessonProgress.count({
+    where: {
+      enrollmentId: enrollment.id,
+      isCompleted: true,
+    },
+  });
+
+  const progressPercentage =
+    totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+
+  // 5. Update enrollment with progress and status
+  const updatedEnrollment = await prisma.enrollment.update({
+    where: { id: enrollment.id },
+    data: {
+      progressPercentage,
+      status:
+        progressPercentage === 100
+          ? EnrollmentStatus.completed
+          : EnrollmentStatus.active,
+    },
+  });
+
+  return updatedEnrollment;
 };
 
 const getMyProgress = async (userId: string, courseId: string) => {

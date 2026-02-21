@@ -45,7 +45,7 @@ enum PaymentStatus {
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid 
+  id        String     @id @default(uuid()) @db.Uuid
   email     String     @unique
   password  String
   name      String
@@ -146,12 +146,12 @@ model Enrollment {
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 
-  student   User   @relation(fields: [studentId], references: [id])
-  studentId String @db.Uuid
-  course    Course @relation(fields: [courseId], references: [id])
-  courseId  String @db.Uuid
-
-  progress LessonProgress[]
+  student            User             @relation(fields: [studentId], references: [id])
+  studentId          String           @db.Uuid
+  course             Course           @relation(fields: [courseId], references: [id])
+  courseId           String           @db.Uuid
+  progressPercentage Float            @default(0)
+  progress           LessonProgress[]
 
   @@unique([studentId, courseId])
   @@index([studentId])
