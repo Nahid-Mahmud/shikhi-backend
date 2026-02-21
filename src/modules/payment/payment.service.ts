@@ -14,6 +14,14 @@ const createCheckoutSession = async (userId: string, courseId: string) => {
     throw new AppError(StatusCodes.NOT_FOUND, 'Course not found');
   }
 
+  // check if the user is the instructor of the course
+  if (course.instructorId === userId) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Instructors cannot enroll in their own courses'
+    );
+  }
+
   // Check if already enrolled
   const existingEnrollment = await prisma.enrollment.findUnique({
     where: {
