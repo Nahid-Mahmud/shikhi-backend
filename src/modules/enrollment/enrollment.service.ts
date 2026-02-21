@@ -15,7 +15,7 @@ const enrollStudent = async (
 
   // 1. Check if course exists and is published
   const course = await prisma.course.findUnique({
-    where: { id: courseId },
+    where: { id: courseId, isDeleted: false },
   });
 
   if (!course) {
@@ -83,7 +83,12 @@ const updateEnrollmentStatus = async (
 
 const getMyEnrolledCourses = async (studentId: string) => {
   const enrollments = await prisma.enrollment.findMany({
-    where: { studentId },
+    where: {
+      studentId,
+      course: {
+        isDeleted: false,
+      },
+    },
     include: {
       course: {
         include: {

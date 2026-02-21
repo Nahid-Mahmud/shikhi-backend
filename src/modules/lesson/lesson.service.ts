@@ -15,7 +15,7 @@ const createLesson = async (
 
   // Check if course exists
   const course = await prisma.course.findUnique({
-    where: { id: courseId },
+    where: { id: courseId, isDeleted: false },
   });
 
   if (!course) {

@@ -137,7 +137,7 @@ const updateCourse = async (
 // public endpoint to get single course details by id (for course details page)
 const getSingleCourse = async (courseId: string) => {
   const course = await prisma.course.findUnique({
-    where: { id: courseId },
+    where: { id: courseId, isDeleted: false },
     include: {
       instructor: {
         select: {
@@ -183,6 +183,7 @@ const getAllCourses = async (filters: GetCoursesFilters = {}) => {
 
   // 2. Construct the dynamic 'where' object
   const where: Prisma.CourseWhereInput = {
+    isDeleted: false,
     // Logic: If search exists, look in title OR description
     ...(search && {
       OR: [
@@ -253,21 +254,17 @@ const getAllCourses = async (filters: GetCoursesFilters = {}) => {
 const deleteCourse = async (courseId: string) => {
   // Check if course exists
   const existingCourse = await prisma.course.findUnique({
-    where: { id: courseId },
+    where: { id: courseId, isDeleted: false },
   });
 
   if (!existingCourse) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Course not found');
   }
 
-  // Delete thumbnail from Cloudinary if it exists
-  if (existingCourse.thumbnail) {
-    await deleteFileFormCloudinary(existingCourse.thumbnail);
-  }
-
-  // Delete the course
-  await prisma.course.delete({
+  // Soft delete the course
+  await prisma.course.update({
     where: { id: courseId },
+    data: { isDeleted: true },
   });
 };
 
@@ -292,7 +289,7 @@ const getCourseDetailsForStudent = async (courseId: string, userId: string) => {
   }
 
   const course = await prisma.course.findFirst({
-    where: { id: courseId, status: CourseStatus.published },
+    where: { id: courseId, status: CourseStatus.published, isDeleted: false },
     include: {
       instructor: {
         select: {
@@ -338,6 +335,7 @@ const getCourseDetailsForInstructor = async (
     where: {
       id: courseId,
       instructorId: userId, // Ensure only the instructor or admins can access
+      isDeleted: false,
     },
     include: {
       instructor: {

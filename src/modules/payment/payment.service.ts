@@ -7,7 +7,7 @@ import { stripe } from '../../utils/stripe';
 
 const createCheckoutSession = async (userId: string, courseId: string) => {
   const course = await prisma.course.findUnique({
-    where: { id: courseId },
+    where: { id: courseId, isDeleted: false },
   });
 
   if (!course) {
