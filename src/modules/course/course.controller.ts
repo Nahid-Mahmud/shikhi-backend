@@ -2,6 +2,7 @@ import { catchAsync } from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { courseService } from './course.service';
 import { GetCoursesFilters } from './course.interface';
+import { StatusCodes } from 'http-status-codes';
 
 const createCourse = catchAsync(async (req, res) => {
   const instructorId = req.user.id;
@@ -13,7 +14,7 @@ const createCourse = catchAsync(async (req, res) => {
   );
 
   sendResponse(res, {
-    statusCode: 201,
+    statusCode: StatusCodes.CREATED,
     success: true,
     message: 'Course created successfully',
     data: course,
@@ -29,7 +30,7 @@ const updateCourse = catchAsync(async (req, res) => {
   );
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Course updated successfully',
     data: course,
@@ -43,7 +44,7 @@ const getSingleCourse = catchAsync(async (req, res) => {
   const course = await courseService.getSingleCourse(id as string);
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Course retrieved successfully',
     data: course,
@@ -56,7 +57,7 @@ const getAllCourses = catchAsync(async (req, res) => {
     req.query as GetCoursesFilters
   );
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Courses retrieved successfully',
     data: result.data,
@@ -74,7 +75,7 @@ const deleteCourse = catchAsync(async (req, res) => {
   await courseService.deleteCourse(id as string);
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Course deleted successfully',
     data: null,
@@ -90,7 +91,7 @@ const getCourseDetailsForStudent = catchAsync(async (req, res) => {
   );
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Course details retrieved successfully',
     data: courseDetails,
@@ -106,7 +107,7 @@ const getCourseDetailsForInstructor = catchAsync(async (req, res) => {
   );
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: 'Course details retrieved successfully',
     data: courseDetails,
