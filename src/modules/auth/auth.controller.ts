@@ -3,6 +3,7 @@ import sendResponse from '../../utils/sendResponse';
 import { generateAuthTokens } from '../../utils/userTokens';
 import { setAuthCookie } from '../../utils';
 import { authService } from './auth.service';
+import { StatusCodes } from 'http-status-codes';
 
 const register = catchAsync(async (req, res) => {
   const { email, password, name } = req.body;
@@ -12,7 +13,7 @@ const register = catchAsync(async (req, res) => {
     success: true,
     message: 'User registered successfully',
     data: result,
-    statusCode: 201,
+    statusCode: StatusCodes.CREATED,
   });
 });
 
@@ -35,7 +36,7 @@ const login = catchAsync(async (req, res) => {
     success: true,
     message: 'User logged in successfully',
     data: result,
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   });
 });
 
@@ -47,7 +48,7 @@ const forgetPassword = catchAsync(async (req, res) => {
     success: true,
     message: result.message,
     data: result,
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   });
 });
 
@@ -59,7 +60,7 @@ const resetPassword = catchAsync(async (req, res) => {
     success: true,
     message: result.message,
     data: result,
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   });
 });
 
@@ -76,7 +77,7 @@ const generateAccessTokenFromRefreshToken = catchAsync(async (req, res) => {
     success: true,
     message: 'Access token generated successfully',
     data: null,
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   });
 });
 
@@ -96,7 +97,7 @@ const logout = catchAsync(async (_req, res) => {
     success: true,
     message: 'User logged out successfully',
     data: null,
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   });
 });
 
