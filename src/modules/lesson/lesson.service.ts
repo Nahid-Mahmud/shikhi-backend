@@ -90,7 +90,6 @@ const updateLesson = async (
     throw new AppError(StatusCodes.NOT_FOUND, 'Lesson not found');
   }
 
-  // prepare update data, optionally handle video upload
   const { courseId, ...lessonData } = payload;
   const updateData: Prisma.LessonUpdateInput = { ...lessonData };
 
@@ -98,9 +97,32 @@ const updateLesson = async (
     updateData.course = { connect: { id: courseId } };
   }
 
-  if (videoFile) {
-    // delete old video if present
+  const incomingType = payload.type ?? existingLesson.type;
+  const typeChanged = payload.type && payload.type !== existingLesson.type;
+
+  // Switching from video → text: delete the old Cloudinary video and clear videoUrl
+  if (typeChanged && incomingType === 'text') {
     if (existingLesson.videoUrl) {
+      await deleteFileFormCloudinary(existingLesson.videoUrl);
+    }
+    updateData.videoUrl = null;
+  }
+
+  // Switching from text → video: require a video file and clear text content
+  if (typeChanged && incomingType === 'video') {
+    if (!videoFile) {
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        'A video file is required when switching lesson type to video'
+      );
+    }
+    updateData.content = null;
+  }
+
+  // Upload new video file (either type switch to video, or replacing existing video)
+  if (videoFile && incomingType === 'video') {
+    // Delete old video only if we're replacing (not switching — already handled above)
+    if (!typeChanged && existingLesson.videoUrl) {
       await deleteFileFormCloudinary(existingLesson.videoUrl);
     }
 
