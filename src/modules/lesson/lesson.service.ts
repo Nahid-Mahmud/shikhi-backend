@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../../config/prisma';
 import AppError from '../../errors/AppError';
@@ -90,7 +91,12 @@ const updateLesson = async (
   }
 
   // prepare update data, optionally handle video upload
-  const updateData: IUpdateLesson = { ...payload };
+  const { courseId, ...lessonData } = payload;
+  const updateData: Prisma.LessonUpdateInput = { ...lessonData };
+
+  if (courseId) {
+    updateData.course = { connect: { id: courseId } };
+  }
 
   if (videoFile) {
     // delete old video if present
