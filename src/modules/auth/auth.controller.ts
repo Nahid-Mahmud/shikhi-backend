@@ -6,8 +6,8 @@ import { authService } from './auth.service';
 import { StatusCodes } from 'http-status-codes';
 
 const register = catchAsync(async (req, res) => {
-  const { email, password, name } = req.body;
-  const result = await authService.register(email, password, name);
+  const { email, password, name, role } = req.body;
+  const result = await authService.register(email, password, name, role);
 
   sendResponse(res, {
     success: true,

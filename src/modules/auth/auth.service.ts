@@ -9,7 +9,12 @@ import { createNewRefreshToken } from '../../utils/userTokens';
 import { hashPassword } from '../../utils/hashPassword';
 import { sendEmail } from '../../utils/sendEmail';
 
-const register = async (email: string, password: string, name: string) => {
+const register = async (
+  email: string,
+  password: string,
+  name: string,
+  role: 'student' | 'instructor' = 'student'
+) => {
   if (!email || !password) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
@@ -32,6 +37,7 @@ const register = async (email: string, password: string, name: string) => {
       email: normalizedEmail,
       password: hashedPassword,
       name,
+      role,
     },
     select: {
       id: true,
