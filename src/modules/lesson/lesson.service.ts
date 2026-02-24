@@ -122,6 +122,10 @@ const deleteLesson = async (id: string) => {
     throw new AppError(StatusCodes.NOT_FOUND, 'Lesson not found');
   }
 
+  if (existingLesson.videoUrl) {
+    await deleteFileFormCloudinary(existingLesson.videoUrl);
+  }
+
   await prisma.lesson.delete({
     where: { id },
   });
