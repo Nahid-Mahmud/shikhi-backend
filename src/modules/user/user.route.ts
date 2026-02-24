@@ -52,7 +52,7 @@ router.patch(
 // Super Admin only — separate route to update user role
 router.patch(
   '/:id/role',
-  checkAuth(UserRole.super_admin, UserRole.admin),
+  checkAuth(UserRole.super_admin),
   validateRequest(userValidation.updateRoleSchema),
   userController.updateUserRole
 );
