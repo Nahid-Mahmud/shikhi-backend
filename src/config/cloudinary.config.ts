@@ -13,8 +13,6 @@ cloudinary.config({
 });
 
 export const deleteFileFormCloudinary = async (url: string) => {
-  // https://res.cloudinary.com/dyzuwklhu/image/upload/v1753369119/1dutg8xx9xv-1753369116632-martin-baron-p3qjjsimxo4-unsplash-jpg.jpg.jpg
-
   if (!url || typeof url !== 'string') {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
@@ -191,7 +189,7 @@ export const uploadFileToCloudinary = async (
           {
             resource_type: resourceType,
             public_id: `${folder}/${uniqueFileName}`,
-            folder: `STCOMP/${folder}`,
+            folder: `skhkhi/${folder}`,
           },
           (error, result) => {
             if (error) {
