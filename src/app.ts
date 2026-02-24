@@ -46,7 +46,7 @@ app.use(
 app.use(morgan('dev'));
 app.set('trust proxy', 1);
 
-// ─── Rate Limiting ────────────────────────────────────────────────────────────
+// Rate Limiting
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -60,21 +60,7 @@ const globalLimiter = rateLimit({
   },
 });
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many auth attempts, please try again later.',
-    status: 429,
-  },
-});
-
 app.use(globalLimiter);
-
-app.use('/api/v1/auth', authLimiter);
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
