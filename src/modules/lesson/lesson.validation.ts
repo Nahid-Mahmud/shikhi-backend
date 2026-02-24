@@ -8,8 +8,13 @@ const create = z.object({
     type: z.nativeEnum(LessonType).optional(),
     videoUrl: z.string().url('Invalid video URL').optional(),
     description: z.string().optional(),
-    order: z.number().int('Order must be an integer'),
-    isPreview: z.boolean().optional(),
+    order: z.coerce.number().int('Order must be an integer'),
+    isPreview: z
+      .preprocess((val) => {
+        if (typeof val === 'string') return val === 'true';
+        return val;
+      }, z.boolean())
+      .optional(),
     courseId: z.string().uuid('Invalid course ID'),
   }),
 });
@@ -21,8 +26,13 @@ const update = z.object({
     type: z.nativeEnum(LessonType).optional(),
     videoUrl: z.string().url('Invalid video URL').optional(),
     description: z.string().optional(),
-    order: z.number().optional(),
-    isPreview: z.boolean().optional(),
+    order: z.coerce.number().optional(),
+    isPreview: z
+      .preprocess((val) => {
+        if (typeof val === 'string') return val === 'true';
+        return val;
+      }, z.boolean())
+      .optional(),
     courseId: z.string().uuid('Invalid course ID').optional(),
   }),
 });
