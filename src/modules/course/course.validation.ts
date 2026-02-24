@@ -59,4 +59,12 @@ const list = z.object({
   }),
 });
 
-export const courseValidation = { create, update, params, list };
+// change status validation for courses
+
+const statusChange = z.object({
+  body: z.object({
+    status: z.enum(CourseStatus),
+  }),
+});
+
+export const courseValidation = { create, update, params, list, statusChange };

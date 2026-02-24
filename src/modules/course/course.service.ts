@@ -372,6 +372,23 @@ const getCourseDetailsForInstructor = async (
   return course;
 };
 
+const changeCourseStatus = async (courseId: string, status: CourseStatus) => {
+  const existingCourse = await prisma.course.findUnique({
+    where: { id: courseId, isDeleted: false },
+  });
+
+  if (!existingCourse) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Course not found');
+  }
+
+  const course = await prisma.course.update({
+    where: { id: courseId },
+    data: { status },
+  });
+
+  return course;
+};
+
 export const courseService = {
   createCourse,
   updateCourse,
@@ -380,4 +397,5 @@ export const courseService = {
   deleteCourse,
   getCourseDetailsForStudent,
   getCourseDetailsForInstructor,
+  changeCourseStatus,
 };

@@ -114,6 +114,20 @@ const getCourseDetailsForInstructor = catchAsync(async (req, res) => {
   });
 });
 
+const changeCourseStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const course = await courseService.changeCourseStatus(id as string, status);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Course status updated successfully',
+    data: course,
+  });
+});
+
 export const courseController = {
   createCourse,
   updateCourse,
@@ -122,4 +136,5 @@ export const courseController = {
   deleteCourse,
   getCourseDetailsForStudent,
   getCourseDetailsForInstructor,
+  changeCourseStatus,
 };

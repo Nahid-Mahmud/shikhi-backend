@@ -41,6 +41,14 @@ router.delete(
   courseController.deleteCourse
 );
 
+// change course status
+router.patch(
+  '/:id/status',
+  checkAuth(UserRole.instructor, UserRole.admin, UserRole.super_admin),
+  validateRequest(courseValidation.statusChange),
+  courseController.changeCourseStatus
+);
+
 // get full course and related lessons by id for students
 
 router.get(
