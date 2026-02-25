@@ -7,11 +7,24 @@ import { lessonProgressController } from './lessonProgress.controller';
 
 const router = Router();
 
+router.post(
+  '/',
+  checkAuth(UserRole.student),
+  validateRequest(lessonProgressValidation.updateProgress),
+  lessonProgressController.updateLessonProgress
+);
+
 router.patch(
   '/update',
   checkAuth(UserRole.student),
   validateRequest(lessonProgressValidation.updateProgress),
   lessonProgressController.updateLessonProgress
+);
+
+router.get(
+  '/',
+  checkAuth(UserRole.student),
+  lessonProgressController.getMyProgress
 );
 
 router.get(

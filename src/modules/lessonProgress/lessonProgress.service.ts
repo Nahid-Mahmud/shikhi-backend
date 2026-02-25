@@ -86,37 +86,60 @@ const updateLessonProgress = async (
   return updatedEnrollment;
 };
 
-const getMyProgress = async (userId: string, courseId: string) => {
-  const enrollment = await prisma.enrollment.findUnique({
+const getMyProgress = async (userId: string, courseId?: string) => {
+  if (courseId) {
+    const enrollment = await prisma.enrollment.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: userId,
+          courseId,
+        },
+      },
+      include: {
+        progress: {
+          include: {
+            lesson: {
+              select: {
+                id: true,
+                title: true,
+                order: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!enrollment) {
+      throw new AppError(
+        StatusCodes.FORBIDDEN,
+        'You are not enrolled in this course'
+      );
+    }
+
+    return enrollment.progress;
+  }
+
+  // If no courseId, return all progress for the user
+  const progress = await prisma.lessonProgress.findMany({
     where: {
-      studentId_courseId: {
+      enrollment: {
         studentId: userId,
-        courseId,
       },
     },
     include: {
-      progress: {
-        include: {
-          lesson: {
-            select: {
-              id: true,
-              title: true,
-              order: true,
-            },
-          },
+      lesson: {
+        select: {
+          id: true,
+          title: true,
+          order: true,
+          courseId: true,
         },
       },
     },
   });
 
-  if (!enrollment) {
-    throw new AppError(
-      StatusCodes.FORBIDDEN,
-      'You are not enrolled in this course'
-    );
-  }
-
-  return enrollment.progress;
+  return progress;
 };
 
 export const lessonProgressService = {
