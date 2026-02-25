@@ -15,6 +15,12 @@ router.get(
   courseController.getAllCourses
 );
 
+router.get(
+  '/instructors',
+  checkAuth(UserRole.instructor, UserRole.admin, UserRole.super_admin),
+  courseController.getCoursesForInstructor
+);
+
 // get single course details - public endpoint
 router.get('/:id', courseController.getSingleCourse);
 

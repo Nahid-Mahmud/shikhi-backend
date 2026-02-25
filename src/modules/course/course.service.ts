@@ -169,7 +169,6 @@ const getAllCourses = async (filters: GetCoursesFilters = {}) => {
     categoryId,
     category,
     instructorId,
-    status,
     isFree,
     page = 1,
     limit = 10,
@@ -184,6 +183,7 @@ const getAllCourses = async (filters: GetCoursesFilters = {}) => {
   // 2. Construct the dynamic 'where' object
   const where: Prisma.CourseWhereInput = {
     isDeleted: false,
+    status: CourseStatus.published,
     // Logic: If search exists, look in title OR description
     ...(search && {
       OR: [
@@ -198,8 +198,7 @@ const getAllCourses = async (filters: GetCoursesFilters = {}) => {
           category: { name: { contains: category, mode: 'insensitive' } },
         }),
     ...(instructorId && { instructorId }),
-    // status is already typed as CourseStatus so it can be used directly
-    ...(status && { status }),
+
     ...(isFree !== undefined && { isFree: String(isFree) === 'true' }),
   };
 
@@ -389,6 +388,31 @@ const changeCourseStatus = async (courseId: string, status: CourseStatus) => {
   return course;
 };
 
+const getCoursesForInstructor = async (instructorId: string) => {
+  const courses = await prisma.course.findMany({
+    where: { instructorId, isDeleted: false },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      thumbnail: true,
+      price: true,
+      isFree: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return courses;
+};
+
 export const courseService = {
   createCourse,
   updateCourse,
@@ -398,4 +422,5 @@ export const courseService = {
   getCourseDetailsForStudent,
   getCourseDetailsForInstructor,
   changeCourseStatus,
+  getCoursesForInstructor,
 };

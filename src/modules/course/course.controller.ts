@@ -128,6 +128,18 @@ const changeCourseStatus = catchAsync(async (req, res) => {
   });
 });
 
+const getCoursesForInstructor = catchAsync(async (req, res) => {
+  const instructorId = req.user.id;
+  const courses = await courseService.getCoursesForInstructor(instructorId);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Courses retrieved successfully',
+    data: courses,
+  });
+});
+
 export const courseController = {
   createCourse,
   updateCourse,
@@ -137,4 +149,5 @@ export const courseController = {
   getCourseDetailsForStudent,
   getCourseDetailsForInstructor,
   changeCourseStatus,
+  getCoursesForInstructor,
 };
