@@ -17,7 +17,7 @@ const createUserSchema = z.object({
 
 const updateRoleSchema = z.object({
   body: z.object({
-    role: z.enum(['super_admin', 'admin', 'student']),
+    role: z.enum(['super_admin', 'admin', 'student', 'instructor']),
   }),
 });
 
